@@ -1,0 +1,6 @@
+pandas>=2.0
+numpy>=1.24
+akshare>=1.14
+pytest>=7.0
+streamlit>=1.38
+matplotlib>=3.8

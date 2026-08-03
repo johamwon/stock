@@ -1,0 +1,96 @@
+{
+  "cash": 24661.67,
+  "positions": [
+    {
+      "symbol": "600036",
+      "shares": 200,
+      "cost_price": 35.248,
+      "strategy": "donchian",
+      "risk_profile": "纪律版"
+    },
+    {
+      "symbol": "600089",
+      "shares": 500,
+      "cost_price": 23.221,
+      "strategy": "donchian",
+      "risk_profile": "纪律版"
+    },
+    {
+      "symbol": "600570",
+      "shares": 300,
+      "cost_price": 23.317,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "601628",
+      "shares": 100,
+      "cost_price": 48.132,
+      "strategy": "donchian",
+      "risk_profile": "纪律版"
+    },
+    {
+      "symbol": "000977",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "601211",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "002033",
+      "shares": 500,
+      "cost_price": 8.796,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "000538",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "000001",
+      "shares": 500,
+      "cost_price": 11.298,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "600030",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "688248",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "600025",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    },
+    {
+      "symbol": "600995",
+      "shares": 0,
+      "cost_price": 0.0,
+      "strategy": "donchian",
+      "risk_profile": "趋势版"
+    }
+  ]
+}

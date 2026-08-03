@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 本地数据缓存与产物（部署后为临时文件）
+data_cache/
+output/
+logs/
+
+# 本工具内部数据
+.codebuddy/
+
+# 环境
+.env
+
+# 源码压缩包（仓库内已有源码目录，无需重复）
+retailquant-src.zip
