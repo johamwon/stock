@@ -370,6 +370,8 @@ def _render_advisor_tab() -> None:
             return
 
     st.divider()
+    st.caption("ℹ️ 每次点击都会**重新拉取最新行情（不使用任何缓存）并重新计算建议**，"
+               "可多次点击以获取收盘后更新的数据，不会因缓存返回旧结果。")
     if st.button("🧭 生成今日操作建议", type="primary",
                  disabled=not pf.positions):
         try:
@@ -383,7 +385,11 @@ def _render_advisor_tab() -> None:
         with st.spinner("获取最新行情…"):
             for p in pf.positions:
                 try:
-                    data[p.symbol] = _load_daily_cached(p.symbol, start, end)
+                    # use_cache=False：绕过 data 模块的磁盘缓存与 st.cache_data，
+                    # 保证每次点击都重新下载最新行情并重新计算，避免“点第二次仍是旧数据”。
+                    df = load_daily(p.symbol, start, end, use_cache=False)
+                    validate_ohlcv(df)
+                    data[p.symbol] = df
                 except Exception as exc:  # noqa: BLE001
                     st.warning(f"{p.symbol}：行情获取失败（{exc}）")
         if not data:
