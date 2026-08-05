@@ -98,7 +98,7 @@ class TestEnsureDomesticNoProxy:
         import os
         parts = os.environ["NO_PROXY"].split(",")
         assert "localhost" in parts and "127.0.0.1" in parts
-        assert "eastmoney.com" in parts and "cninfo.com.cn" in parts
+        assert "qt.gtimg.cn" in parts and "cninfo.com.cn" in parts
 
     def test_idempotent(self, monkeypatch):
         """重复调用不产生重复条目。"""
@@ -110,4 +110,4 @@ class TestEnsureDomesticNoProxy:
         first = os.environ["NO_PROXY"]
         ensure_domestic_no_proxy()
         assert os.environ["NO_PROXY"] == first
-        assert first.split(",").count("eastmoney.com") == 1
+        assert first.split(",").count("qt.gtimg.cn") == 1

@@ -2,7 +2,7 @@
 """行情数据模块：akshare 获取 A 股日线（前复权）+ 本地 CSV 缓存。
 
 散户视角：
-    - 只用免费公开数据源（akshare / 东财接口），无需付费行情
+    - 只用免费公开数据源（akshare / 腾讯、新浪接口），无需付费行情
     - 本地缓存避免重复请求被限流
     - 前复权价格保证回测收益率连续性
 """
@@ -18,7 +18,7 @@ from retailquant.logger import get_logger
 
 log = get_logger("data")
 
-# akshare 东财日线接口返回的中文列 -> 标准英文列
+# akshare 各数据源返回的中文列 -> 标准英文列
 _COLUMN_MAP = {
     "日期": "date",
     "开盘": "open",
@@ -35,7 +35,8 @@ _RETRY_WAIT_SEC = 2.0
 
 # 国内数据源域名：无需代理，直连更稳（本机代理故障时仍可用）
 _DIRECT_DOMAINS = (
-    "eastmoney.com",   # 东财行情/个股信息
+    "qt.gtimg.cn",     # 腾讯行情
+    "tencent.com",     # 腾讯
     "sse.com.cn",      # 上交所
     "szse.cn",         # 深交所
     "bse.cn",          # 北交所
@@ -47,7 +48,7 @@ def ensure_domestic_no_proxy() -> None:
     """把国内数据源域名追加进 NO_PROXY，绕开系统代理直连。
 
     背景：本机若配置了代理（HTTP_PROXY 等），requests/akshare 会自动跟随；
-    代理进程故障时会抛 ProxyError，而东财等国内接口直连即可访问。
+    代理进程故障时会抛 ProxyError，而腾讯等国内接口直连即可访问。
     幂等：已存在的条目不会重复追加，不覆盖用户原有 NO_PROXY 设置。
     """
     for var in ("NO_PROXY", "no_proxy"):
@@ -74,21 +75,11 @@ def _normalize(raw: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _fetch_eastmoney(symbol: str, start: str, end: str) -> pd.DataFrame:
-    """主数据源：东财前复权日线（成交量单位：手）。"""
-    import akshare as ak  # 延迟导入，离线单测不依赖网络库初始化
-
-    return ak.stock_zh_a_hist(
-        symbol=symbol, period="daily",
-        start_date=start, end_date=end, adjust="qfq",
-    )
-
-
 def _fetch_sina(symbol: str, start: str, end: str) -> pd.DataFrame:
-    """备用数据源：新浪前复权日线（东财限流/故障时自动切换）。
+    """备用数据源：新浪前复权日线。
 
     新浪接口需带交易所前缀（sh/sz/bj）；成交量单位为股，
-    这里换算为手（/100）与东财口径保持一致。
+    这里换算为手（/100）与腾讯口径保持一致。
     """
     import akshare as ak
 
@@ -105,11 +96,7 @@ def _fetch_sina(symbol: str, start: str, end: str) -> pd.DataFrame:
 
 
 def _fetch_tencent(symbol: str, start: str, end: str) -> pd.DataFrame:
-    """备用数据源：腾讯前复权日线（东财不可达时常用，数据通常较及时）。
-
-    腾讯接口数据更新比新浪更及时，且本机网络下常比东财更可达，
-    作为东财之后的首选备用源。
-    """
+    """主数据源：腾讯前复权日线（数据更新及时，网络可达性好）。"""
     import akshare as ak
 
     return ak.stock_zh_a_hist_tx(
@@ -117,9 +104,8 @@ def _fetch_tencent(symbol: str, start: str, end: str) -> pd.DataFrame:
     )
 
 
-# 数据源优先级：东财（字段全）-> 腾讯（及时/可达）-> 新浪（备用）
+# 数据源优先级：腾讯（主，及时/可达）-> 新浪（备用）
 _SOURCES: tuple[tuple[str, object], ...] = (
-    ("东财", _fetch_eastmoney),
     ("腾讯", _fetch_tencent),
     ("新浪", _fetch_sina),
 )

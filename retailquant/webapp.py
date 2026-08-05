@@ -335,6 +335,7 @@ def _advices_table(advices: list, data: dict[str, pd.DataFrame], pf: Portfolio) 
             "代码": adv.symbol,
             "名称": _name_of(adv.symbol),
             "持仓": f"{pos.shares} 股" if pos.shares else "观察",
+            "_持仓优先": pos.shares > 0,  # 仅用于排序，不展示
             "策略": _STRATEGY_LABELS.get(pos.strategy, pos.strategy),
             "行情日期": adv.last_date.date(),
             "最新收盘": round(adv.last_close, 3),
@@ -345,6 +346,10 @@ def _advices_table(advices: list, data: dict[str, pd.DataFrame], pf: Portfolio) 
             "操作建议": adv.action,
             "理由": adv.reason,
         })
+    # 按是否持仓排序：持仓股在前，观察股在后；持仓内部保持原有顺序。
+    rows.sort(key=lambda r: not r["_持仓优先"])
+    for r in rows:
+        r.pop("_持仓优先", None)
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
     st.caption("信号基于最新收盘数据，按 T+1 规则建议「明日开盘」执行；"
                "盘中若跌破止损参考价请直接执行纪律，不必等收盘。仅供研究，不构成投资建议。")
