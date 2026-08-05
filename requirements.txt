@@ -2,5 +2,8 @@ pandas>=2.0
 numpy>=1.24
 akshare>=1.14
 pytest>=7.0
-streamlit>=1.38
+# 锁定版本以避免 Streamlit Cloud(Python3.14) 拉到与最新 Starlette 不兼容的
+# Streamlit 新版，导致 GZipResponder 缺参 500 错误。与本地开发环境保持一致。
+streamlit==1.60.0
+starlette>=0.40.0,<1.1
 matplotlib>=3.8
