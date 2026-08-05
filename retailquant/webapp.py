@@ -482,8 +482,9 @@ def main() -> None:
     #（省内存、提速）；默认落地在回测页，不会预先拉取个股速览的全市场名称表。
     view = st.segmented_control(
         "功能导航", list(_VIEWS), default="📊 策略回测",
-        label_visibility="collapsed")
+        label_visibility="collapsed", key="main_view_nav")
     _VIEWS.get(view, _render_backtest_tab)()
 
 
-main()
+if __name__ == "__main__":
+    main()
