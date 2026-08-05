@@ -104,9 +104,23 @@ def _fetch_sina(symbol: str, start: str, end: str) -> pd.DataFrame:
     return raw
 
 
-# 数据源优先级：东财（字段全）-> 新浪（备用）
+def _fetch_tencent(symbol: str, start: str, end: str) -> pd.DataFrame:
+    """备用数据源：腾讯前复权日线（东财不可达时常用，数据通常较及时）。
+
+    腾讯接口数据更新比新浪更及时，且本机网络下常比东财更可达，
+    作为东财之后的首选备用源。
+    """
+    import akshare as ak
+
+    return ak.stock_zh_a_hist_tx(
+        symbol=symbol, start_date=start, end_date=end, adjust="qfq",
+    )
+
+
+# 数据源优先级：东财（字段全）-> 腾讯（及时/可达）-> 新浪（备用）
 _SOURCES: tuple[tuple[str, object], ...] = (
     ("东财", _fetch_eastmoney),
+    ("腾讯", _fetch_tencent),
     ("新浪", _fetch_sina),
 )
 
