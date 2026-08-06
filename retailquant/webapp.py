@@ -17,7 +17,7 @@ import streamlit as st
 from retailquant.advisor import advise_portfolio
 from retailquant.backtest import BacktestEngine, BacktestResult
 from retailquant.config import BacktestConfig, RISK_PROFILES, RiskConfig
-from retailquant.data import load_daily, validate_ohlcv
+from retailquant.data import load_daily, validate_ohlcv, _today_cst
 from retailquant.portfolio import Portfolio, Position, load_portfolio, save_portfolio
 from retailquant.report import PerformanceMetrics, compute_metrics
 from retailquant.stockmeta import (
@@ -384,8 +384,11 @@ def _render_advisor_tab() -> None:
         except ValueError as exc:
             st.error(f"持仓数据有误：{exc}")
             return
-        end = date.today().strftime("%Y%m%d")
-        start = (date.today() - timedelta(days=_ADVISOR_LOOKBACK_DAYS)).strftime("%Y%m%d")
+        # 用北京时间计算 today（部署平台多为 UTC，date.today() 会少算一天）；
+        # end 向后延伸 9 天，确保覆盖“当日未收盘/接口延迟/时区偏差”，
+        # 让数据源返回真正最新的已收盘交易日，而非停留在昨日。
+        end = (_today_cst() + timedelta(days=9)).strftime("%Y%m%d")
+        start = (_today_cst() - timedelta(days=_ADVISOR_LOOKBACK_DAYS)).strftime("%Y%m%d")
         data: dict[str, pd.DataFrame] = {}
         with st.spinner("获取最新行情…"):
             for p in pf.positions:

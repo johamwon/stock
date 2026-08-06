@@ -111,6 +111,20 @@ _SOURCES: tuple[tuple[str, object], ...] = (
 )
 
 
+def _today_cst() -> "date":
+    """返回北京时间(UTC+8)的“今天”日期。
+
+    Streamlit Cloud 等部署平台的服务器默认使用 UTC，直接调用
+    ``date.today()`` 会得到 UTC 日期，比北京时间晚最多 8 小时；
+    在北京时间的 00:00~08:00 时段会“少算一天”，导致行情请求的
+    end 日期错位、拿到的是前天的陈旧数据。统一用北京时间计算，
+    可消除该时区 bug。
+    """
+    from datetime import datetime, timedelta, timezone
+
+    return (datetime.now(timezone.utc) + timedelta(hours=8)).date()
+
+
 def load_daily(symbol: str, start: str, end: str, use_cache: bool = True) -> pd.DataFrame:
     """加载单只 A 股前复权日线。
 
